@@ -80,7 +80,7 @@ describe('Router', function() {
           this.Photo.create({ name: 'b' }).then(function(err) {
             this.Photo.create({ name: 'c' }).then(function(err) {
               this.Photo.create({ name: 'a' }).then(function(err) {
-                this.router.handleRequest({method: 'GET', path: '/api/photos', query: { where: { name: ['a', 'b', 'c'] }, order: "name DESC" }, body: null}, function(response) {
+                this.router.handleRequest({method: 'GET', path: '/api/photos', query: { where: { name: ['a', 'b', 'c'] }, order: "name ASC" }, body: null}, function(response) {
                   expect(response.status).to.equal('success')
                   expect(response.data.length).to.equal(3)
                   expect(response.data[0].name).to.equal('a')
