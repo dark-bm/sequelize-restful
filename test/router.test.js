@@ -109,7 +109,8 @@ describe('Router', function() {
             { name: 'photo_12' }
           ]
           this.Photo.bulkCreate(photoDefinitions).then(function(err) {
-            this.router.handleRequest({method: 'GET', path: '/api/photos', query: { where: { name: { $like: 'photo_'} }, order: "name ASC", limit: 4, offset: 4 }, body: null}, function(response) {
+            this.router.handleRequest({method: 'GET', path: '/api/photos', query: { where: { name: { $like: 'photo_%' } }, order: "name ASC", limit: 4, offset: 4 }, body: null}, function(response) {
+              console.log(response.message);
               expect(response.status).to.equal('success')
               expect(response.data.length).to.equal(4)
               expect(response.data[0].name).to.equal('photo_5')
