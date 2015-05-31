@@ -75,6 +75,24 @@ describe('Router', function() {
             }.bind(this))
           }.bind(this))
         })
+
+        it('returns an ordered array according to the ordering specified', function(done) {
+          this.Photo.create({ name: 'b' }).then(function(err) {
+            this.Photo.create({ name: 'c' }).then(function(err) {
+              this.Photo.create({ name: 'a' }).then(function(err) {
+                this.router.handleRequest({method: 'GET', path: '/api/photos', query: { where: { name: ['a', 'b', 'c'] }, order: "name DESC" }, body: null}, function(response) {
+                  expect(response.status).to.equal('success')
+                  expect(response.data.length).to.equal(3)
+                  expect(response.data[0].name).to.equal('a')
+                  expect(response.data[1].name).to.equal('b')
+                  expect(response.data[2].name).to.equal('c')
+                  done()
+                })
+              }.bind(this))
+            }.bind(this))
+          }.bind(this))
+        })
+
       })
 
       describe('POST', function() {
