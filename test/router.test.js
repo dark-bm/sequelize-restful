@@ -107,7 +107,6 @@ describe('Router', function() {
           ]
           this.Photo.bulkCreate(photoDefinitions).then(function(err) {
             this.router.handleRequest({method: 'GET', path: '/api/photos', query: { where: { name: { $like: 'phototest%' } }, order: "name ASC",  offset: 3, limit: 3 }, body: null}, function(response) {
-              console.log(response.data);
               expect(response.status).to.equal('success')
               expect(response.data.length).to.equal(3)
               expect(response.data[0].name).to.equal('phototest4')
@@ -165,12 +164,12 @@ describe('Router', function() {
       before(function(done) {
         var self = this
 
-        this.Photo.destroy().then(function() {
+        //this.Photo.destroy().then(function() {
           self.Photo.create({ name: 'a lovely photo' }).then(function(photo) {
             self.photoId = photo.id
             done()
           })
-        })
+        //})
       })
 
       describe('GET', function() {
@@ -260,16 +259,14 @@ describe('Router', function() {
           , photographer = null
 
 
-        this.Photo
-          .destroy()
-          .then(function() { return self.Photographer.destroy() })
-          .then(function() { return self.Photographer.create({ name: 'Doctor Who' }) })
+        self.Photographer.create({ name: 'Doctor Who' })
           .then(function(p) {
             self.photographer = p
-            return self.Photo.create({ name: 'wondercat', photographerId: p.id })
+            return self.Photo.create({ name: 'wondercat', PhotographerId: p.id })
           })
           .then(function(p) {
             self.photo = p
+            console.log(self.photo, self.photographer)
             done()
           })
       })
@@ -284,6 +281,7 @@ describe('Router', function() {
               path:   "/api/photos/" + this.photo.id + "/photographer",
               body:   null
             }, function(response) {
+              console.log(response);
               expect(response.status).to.equal('success')
               expect(Object.keys(response.data).sort()).to.eql(['id', 'name', 'createdAt', 'updatedAt'].sort())
               expect(response.data.name).to.equal('Doctor Who')
@@ -328,7 +326,7 @@ describe('Router', function() {
               expect(response.data).to.be.an(Array)
               expect(response.data.length).to.equal(1)
 
-              expect(Object.keys(response.data[0]).sort()).to.eql(Object.keys(self.photo.values).sort())
+              expect(Object.keys(response.data[0]).sort()).to.eql(Object.keys(self.photo.get()).sort())
               expect(response.data[0].name).to.equal('wondercat')
 
               done()

@@ -14,14 +14,14 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "lodash": "~1.0.0-rc.3",
-    "connect": "~2.7.2"
+    "lodash": "^3.9.3",
+    "connect": "^2.29.2"
   },
   "devDependencies": {
-    "mocha": "~1.17.0",
+    "mocha": "^2.2.5",
     "sequelize": "^2.0.3",
-    "sqlite3": "~3.0.0",
+    "sqlite3": "^3.0.8",
     "mysql": "2.0.1",
-    "expect.js": "~0.2.0"
+    "expect.js": "^0.3.1"
   }
 }
