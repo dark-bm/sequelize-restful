@@ -33,12 +33,10 @@ describe('Router', function() {
       this.Photo.belongsTo(this.Photographer)
       this.Photographer.hasMany(this.Photo)
 
-      this.sequelize.sync({ force: true }).complete(function(err) {
-        if (err) {
-          throw err
-        } else {
-          done()
-        }
+      this.sequelize.sync({ force: true }).then(function(err) {
+        done()
+      }).catch(function (err) {
+        throw err
       })
     })
 
@@ -53,7 +51,7 @@ describe('Router', function() {
         })
 
         it('returns an array if one entry if the dataset was created before', function(done) {
-          this.Photo.create({ name: 'fnord' }).complete(function(err) {
+          this.Photo.create({ name: 'fnord' }).then(function(err) {
             this.router.handleRequest({ method: 'GET', path: '/api/photos', body: null }, function(response) {
               expect(response.status).to.equal('success')
               expect(response.data.length).to.equal(1)
@@ -64,10 +62,10 @@ describe('Router', function() {
         })
 
         it('returns an array matching only the attributes requested', function(done) {
-          this.Photo.create({ name: 'dronf' }).complete(function(err) {
-            this.Photo.create({ name: 'dron' }).complete(function(err) {
-              this.Photo.create({ name: 'omnom' }).complete(function(err) {
-                this.router.handleRequest({method: 'GET', path: '/api/photos', query: { name: 'dronf' }, body: null}, function(response) {
+          this.Photo.create({ name: 'dronf' }).then(function(err) {
+            this.Photo.create({ name: 'dron' }).then(function(err) {
+              this.Photo.create({ name: 'omnom' }).then(function(err) {
+                this.router.handleRequest({method: 'GET', path: '/api/photos', query: { where: { name: 'dronf' } }, body: null}, function(response) {
                   expect(response.status).to.equal('success')
                   expect(response.data.length).to.equal(1)
                   expect(response.data[0].name).to.equal('dronf')
