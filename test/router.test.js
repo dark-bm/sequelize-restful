@@ -93,6 +93,34 @@ describe('Router', function() {
           }.bind(this))
         })
 
+        it('returns an offset and limited array for pagination of results', function(done) {
+          var photoDefinitions = [
+            { name: 'photo_1' },
+            { name: 'photo_2' },
+            { name: 'photo_3' },
+            { name: 'photo_4' },
+            { name: 'photo_5' },
+            { name: 'photo_6' },
+            { name: 'photo_7' },
+            { name: 'photo_8' },
+            { name: 'photo_9' },
+            { name: 'photo_10' },
+            { name: 'photo_11' },
+            { name: 'photo_12' }
+          ]
+          this.Photo.bulkCreate(photoDefinitions).then(function(err) {
+            this.router.handleRequest({method: 'GET', path: '/api/photos', query: { where: { name: { $like: 'photo_'} }, order: "name ASC", limit: 4, offset: 4 }, body: null}, function(response) {
+              expect(response.status).to.equal('success')
+              expect(response.data.length).to.equal(4)
+              expect(response.data[0].name).to.equal('photo_5')
+              expect(response.data[1].name).to.equal('photo_6')
+              expect(response.data[2].name).to.equal('photo_7')
+              expect(response.data[0].name).to.equal('photo_8')
+              done()
+            })
+          }.bind(this))
+        })
+
       })
 
       describe('POST', function() {
