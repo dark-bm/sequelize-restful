@@ -10,24 +10,24 @@ var expect    = require('expect.js')
 describe('Router', function() {
   describe('isRestfulRequest', function() {
     it('returns true if the default route was used', function() {
-      expect(new Router().isRestfulRequest('/api/photos')).to.be.ok()
+      expect(new Router().isRestfulRequest('/api/Photos')).to.be.ok()
     })
 
     it('returns false if another route was used', function() {
-      expect(new Router().isRestfulRequest('/fnord/photos')).to.not.be.ok()
+      expect(new Router().isRestfulRequest('/fnord/Photos')).to.not.be.ok()
     })
 
     it('returns true if the optional route was used', function() {
       var router = new Router(null, { endpoint: '/fnord' })
-      expect(router.isRestfulRequest('/fnord/photos')).to.be.ok()
+      expect(router.isRestfulRequest('/fnord/Photos')).to.be.ok()
     })
   })
 
   describe('handleRequest', function() {
     before(function(done) {
       this.sequelize    = new Sequelize(null, null, null, config)
-      this.Photo        = this.sequelize.define('Photo', { name: Sequelize.STRING }, { tableName: 'photos' })
-      this.Photographer = this.sequelize.define('Photographer', { name: Sequelize.STRING }, { tableName: 'photographers' })
+      this.Photo        = this.sequelize.define('Photo', { name: Sequelize.STRING })
+      this.Photographer = this.sequelize.define('Photographer', { name: Sequelize.STRING })
       this.router       = new Router(this.sequelize, {})
 
       this.Photo.belongsTo(this.Photographer)
@@ -40,10 +40,10 @@ describe('Router', function() {
       })
     })
 
-    describe('/api/photos', function() {
+    describe('/api/Photos', function() {
       describe('GET', function() {
         it('returns an empty array if no table entries were created before', function(done) {
-          this.router.handleRequest({ method: 'GET', path: '/api/photos', body: null }, function(response) {
+          this.router.handleRequest({ method: 'GET', path: '/api/Photos', body: null }, function(response) {
             expect(response.status).to.equal('success')
             expect(response.data).to.eql([])
             done()
@@ -52,7 +52,7 @@ describe('Router', function() {
 
         it('returns an array if one entry if the dataset was created before', function(done) {
           this.Photo.create({ name: 'fnord' }).then(function(err) {
-            this.router.handleRequest({ method: 'GET', path: '/api/photos', body: null }, function(response) {
+            this.router.handleRequest({ method: 'GET', path: '/api/Photos', body: null }, function(response) {
               expect(response.status).to.equal('success')
               expect(response.data.length).to.equal(1)
               expect(response.data[0].name).to.equal('fnord')
@@ -65,7 +65,7 @@ describe('Router', function() {
           this.Photo.create({ name: 'dronf' }).then(function(err) {
             this.Photo.create({ name: 'dron' }).then(function(err) {
               this.Photo.create({ name: 'omnom' }).then(function(err) {
-                this.router.handleRequest({method: 'GET', path: '/api/photos', query: { where: { name: 'dronf' } }, body: null}, function(response) {
+                this.router.handleRequest({method: 'GET', path: '/api/Photos', query: { where: { name: 'dronf' } }, body: null}, function(response) {
                   expect(response.status).to.equal('success')
                   expect(response.data.length).to.equal(1)
                   expect(response.data[0].name).to.equal('dronf')
@@ -80,7 +80,7 @@ describe('Router', function() {
           this.Photo.create({ name: 'b' }).then(function(err) {
             this.Photo.create({ name: 'c' }).then(function(err) {
               this.Photo.create({ name: 'a' }).then(function(err) {
-                this.router.handleRequest({method: 'GET', path: '/api/photos', query: { where: { name: ['a', 'b', 'c'] }, order: "name ASC" }, body: null}, function(response) {
+                this.router.handleRequest({method: 'GET', path: '/api/Photos', query: { where: { name: ['a', 'b', 'c'] }, order: "name ASC" }, body: null}, function(response) {
                   expect(response.status).to.equal('success')
                   expect(response.data.length).to.equal(3)
                   expect(response.data[0].name).to.equal('a')
@@ -106,7 +106,7 @@ describe('Router', function() {
             { name: 'phototest9' }
           ]
           this.Photo.bulkCreate(photoDefinitions).then(function(err) {
-            this.router.handleRequest({method: 'GET', path: '/api/photos', query: { where: { name: { $like: 'phototest%' } }, order: "name ASC",  offset: 3, limit: 3 }, body: null}, function(response) {
+            this.router.handleRequest({method: 'GET', path: '/api/Photos', query: { where: { name: { $like: 'phototest%' } }, order: "name ASC",  offset: 3, limit: 3 }, body: null}, function(response) {
               expect(response.status).to.equal('success')
               expect(response.data.length).to.equal(3)
               expect(response.data[0].name).to.equal('phototest4')
@@ -126,7 +126,7 @@ describe('Router', function() {
           this.Photo.count().then(function(photoCountBefore) {
             self.router.handleRequest({
               method: 'POST',
-              path: '/api/photos',
+              path: '/api/Photos',
               body: {
                 name: 'my lovely photo'
               }
@@ -144,13 +144,13 @@ describe('Router', function() {
         it('returns the structure of the model', function(done) {
           this.router.handleRequest({
             method: 'HEAD',
-            path:   '/api/photos',
+            path:   '/api/Photos',
             body:   null
           }, function(response) {
             expect(response.status).to.equal('success')
 
             expect(response.data.name).to.equal('Photo')
-            expect(response.data.tableName).to.equal('photos')
+            expect(response.data.tableName).to.equal('Photos')
 
             expect(Object.keys(response.data.attributes)).to.eql(['id', 'name', 'createdAt', 'updatedAt', 'PhotographerId'])
 
@@ -160,7 +160,7 @@ describe('Router', function() {
       })
     })
 
-    describe('/api/photos/<id>', function() {
+    describe('/api/Photos/<id>', function() {
       before(function(done) {
         var self = this
 
@@ -178,7 +178,7 @@ describe('Router', function() {
 
           this.router.handleRequest({
             method: 'GET',
-            path:   '/api/photos/' + this.photoId,
+            path:   '/api/Photos/' + this.photoId,
             body:   null
           }, function(response) {
             expect(response.status).to.equal('success')
@@ -200,7 +200,7 @@ describe('Router', function() {
 
           this.router.handleRequest({
             method: 'PUT',
-            path:   '/api/photos/' + this.photoId,
+            path:   '/api/Photos/' + this.photoId,
             body:   { name: 'another name' }
           }, function(response) {
             self.Photo.find(self.photoId).then(function(photo) {
@@ -218,7 +218,7 @@ describe('Router', function() {
 
           this.router.handleRequest({
             method: 'PATCH',
-            path:   '/api/photos/' + this.photoId,
+            path:   '/api/Photos/' + this.photoId,
             body:   { name: 'yet another name' }
           }, function(response) {
             self.Photo.find(self.photoId).then(function(photo) {
@@ -237,7 +237,7 @@ describe('Router', function() {
           this.Photo.count().then(function(photoCountBefore) {
             self.router.handleRequest({
               method: 'DELETE',
-              path:   '/api/photos/' + self.photoId,
+              path:   '/api/Photos/' + self.photoId,
               body:   null
             }, function(response) {
               expect(response.status).to.equal('success')
@@ -258,30 +258,30 @@ describe('Router', function() {
           , photo        = null
           , photographer = null
 
+        self.Photographer.destroy({where: {name: 'Doctor Who'}}).then(function () {
+          self.Photographer.create({ name: 'Doctor Who' })
+            .then(function(p) {
+              self.photographer = p
+              return self.Photo.create({ name: 'wondercat', PhotographerId: p.id })
+            })
+            .then(function(p) {
+              self.photo = p
+              done()
+            })
+        })
 
-        self.Photographer.create({ name: 'Doctor Who' })
-          .then(function(p) {
-            self.photographer = p
-            return self.Photo.create({ name: 'wondercat', PhotographerId: p.id })
-          })
-          .then(function(p) {
-            self.photo = p
-            console.log(self.photo, self.photographer)
-            done()
-          })
       })
 
-      describe('/api/photos/<id>/photographer', function() {
+      describe('/api/Photos/<id>/Photographer', function() {
         describe('GET', function() {
           it('returns information about the photos photographer', function(done) {
             var self = this
-
             this.router.handleRequest({
               method: 'GET',
-              path:   "/api/photos/" + this.photo.id + "/photographer",
+              path:   "/api/Photos/" + this.photo.id + "/Photographer",
               body:   null
             }, function(response) {
-              console.log(response);
+
               expect(response.status).to.equal('success')
               expect(Object.keys(response.data).sort()).to.eql(['id', 'name', 'createdAt', 'updatedAt'].sort())
               expect(response.data.name).to.equal('Doctor Who')
@@ -297,9 +297,10 @@ describe('Router', function() {
 
             this.router.handleRequest({
               method: 'DELETE',
-              path:   "/api/photos/" + this.photo.id + "/photographer",
+              path:   "/api/Photos/" + this.photo.id + "/Photographer",
               body:   null
             }, function(response) {
+
               expect(response.status).to.equal('success')
 
               self.photo.reload().then(function(photo) {
@@ -311,14 +312,14 @@ describe('Router', function() {
         })
       })
 
-      describe('/api/photographers/<id>/photos', function() {
+      describe('/api/Photographers/<id>/Photos', function() {
         describe('GET', function() {
           it("returns information about the photographer's photos", function(done) {
             var self = this
 
             this.router.handleRequest({
               method: 'GET',
-              path:   "/api/photographers/" + this.photographer.id + "/photos",
+              path:   "/api/Photographers/" + this.photographer.id + "/Photos",
               body:   null
             }, function(response) {
               expect(response.status).to.equal('success')
@@ -335,14 +336,14 @@ describe('Router', function() {
         })
       })
 
-      describe('/api/photographers/<id>/photos/<id>', function() {
+      describe('/api/Photographers/<id>/Photos/<id>', function() {
         describe('DELETE', function() {
           it("removes the association", function(done) {
             var self = this
 
             this.router.handleRequest({
               method: 'DELETE',
-              path:   "/api/photographers/" + this.photographer.id + "/photos/" + this.photo.id,
+              path:   "/api/Photographers/" + this.photographer.id + "/Photos/" + this.photo.id,
               body:   null
             }, function(response) {
               expect(response.status).to.equal('success')
