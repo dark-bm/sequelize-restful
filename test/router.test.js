@@ -45,6 +45,7 @@ describe('Router', function() {
         it('returns an empty array if no table entries were created before', function(done) {
           this.router.handleRequest({ method: 'GET', path: '/api/Photos', body: null }, function(response) {
             expect(response.status).to.equal('success')
+            expect(response.count).to.equal(0)
             expect(response.data).to.eql([])
             done()
           })
@@ -54,6 +55,7 @@ describe('Router', function() {
           this.Photo.create({ name: 'fnord' }).then(function(err) {
             this.router.handleRequest({ method: 'GET', path: '/api/Photos', body: null }, function(response) {
               expect(response.status).to.equal('success')
+              expect(response.count).to.equal(1)
               expect(response.data.length).to.equal(1)
               expect(response.data[0].name).to.equal('fnord')
               done()
@@ -109,9 +111,7 @@ describe('Router', function() {
             this.router.handleRequest({method: 'GET', path: '/api/Photos', query: { where: { name: { $like: 'phototest%' } }, order: "name ASC",  offset: 3, limit: 3 }, body: null}, function(response) {
               expect(response.status).to.equal('success')
               expect(response.data.length).to.equal(3)
-              expect(response.count).to.equal(15)
-              expect(response.offset).to.equal(3)
-              expect(response.limit).to.equal(3)
+              expect(response.count).to.equal(9)
               expect(response.data[0].name).to.equal('phototest4')
               expect(response.data[1].name).to.equal('phototest5')
               expect(response.data[2].name).to.equal('phototest6')
