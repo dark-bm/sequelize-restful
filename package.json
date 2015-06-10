@@ -1,6 +1,6 @@
 {
   "name": "sequelize-restful",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "description": "A connect module that adds a restful API for all defined models to your application.",
   "main": "lib/index.js",
   "scripts": {
@@ -14,14 +14,12 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "lodash": "~1.0.0-rc.3",
-    "connect": "~2.7.2"
+    "lodash": "^3.9.3"
   },
   "devDependencies": {
-    "mocha": "~1.17.0",
-    "sequelize": "1.7.0-rc2",
-    "sqlite3": "~3.0.0",
-    "mysql": "2.0.1",
-    "expect.js": "~0.2.0"
+    "mocha": "^2.2.5",
+    "sequelize": "^2.0.3",
+    "sqlite3": "^3.0.8",
+    "expect.js": "^0.3.1"
   }
 }
